@@ -1,11 +1,14 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Cari DATABASE_URL, jika tidak ada cari POSTGRES_URL (Vercel default)
 const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
+if (!connectionString) {
+  console.error('CRITICAL: DATABASE_URL or POSTGRES_URL is not defined in environment variables!');
+}
+
 const pool = new Pool({
-  connectionString: connectionString + (connectionString && !connectionString.includes('sslmode') ? '?sslmode=require' : ''),
+  connectionString: connectionString ? (connectionString.includes('sslmode') ? connectionString : `${connectionString}?sslmode=require`) : undefined,
   ssl: {
     rejectUnauthorized: false
   }
