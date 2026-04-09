@@ -1,10 +1,8 @@
-require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const path = require('path');
-const db = require('./db'); // Ini akan merujuk ke api/db.js
+const db = require('./db');
 
 const app = express();
 
