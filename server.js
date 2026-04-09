@@ -453,7 +453,5 @@ app.post('/api/ai/imagen', isAuthenticated, async (req, res) => {
     }
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+// Export for Vercel
+module.exports = app;
