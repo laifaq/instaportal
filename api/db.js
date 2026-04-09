@@ -1,10 +1,11 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const connectionString = process.env.DATABASE_URL;
+// Cari DATABASE_URL, jika tidak ada cari POSTGRES_URL (Vercel default)
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 
 const pool = new Pool({
-  connectionString: connectionString,
+  connectionString: connectionString + (connectionString && !connectionString.includes('sslmode') ? '?sslmode=require' : ''),
   ssl: {
     rejectUnauthorized: false
   }
