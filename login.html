@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk - PromptCraft Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 20% 20%, rgba(0, 212, 170, 0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 60%),
+                        var(--bg-primary);
+            overflow: hidden;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 440px;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 44px 40px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(24px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .brand-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, rgba(0,212,170,0.15), rgba(0,212,170,0.05));
+            border: 1px solid var(--border-accent);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 26px;
+            color: var(--accent);
+            box-shadow: 0 0 30px rgba(0,212,170,0.12);
+        }
+
+        .brand-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        /* Steps */
+        .step { display: none; animation: fadeStep 0.4s ease; }
+        .step.active { display: block; }
+        @keyframes fadeStep {
+            from { opacity: 0; transform: translateX(12px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            background: linear-gradient(to right, #fff 40%, var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .step-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        /* User pill shown in step 2 */
+        .identity-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0,212,170,0.06);
+            border: 1px solid var(--border-accent);
+            border-radius: 50px;
+            padding: 8px 14px 8px 8px;
+            margin-bottom: 24px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .identity-pill:hover { background: rgba(0,212,170,0.1); }
+        .identity-pill-avatar {
+            width: 32px; height: 32px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.9rem;
+        }
+        .identity-pill-name { font-weight: 600; font-size: 0.9rem; flex: 1; }
+        .identity-pill-change { font-size: 0.78rem; color: var(--text-muted); }
+
+        /* Form */
+        .form-group { margin-bottom: 18px; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            pointer-events: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 13px 14px 13px 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.93rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0,212,170,0.1);
+        }
+
+        .input-wrap .toggle-pass {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 0.88rem;
+            transition: color 0.2s;
+        }
+        .input-wrap .toggle-pass:hover { color: var(--accent); }
+
+        /* Alerts */
+        .alert {
+            display: none;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 13px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .alert.show { display: flex; }
+        .alert.error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #ff6b6b; }
+        .alert.success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: #10b981; }
+        .alert.warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); color: #f59e0b; }
+        .alert a { color: inherit; font-weight: 700; }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(0,212,170,0.3);
+            filter: brightness(1.08);
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.2s;
+        }
+        .btn-ghost:hover { color: var(--accent-light); text-decoration: underline; }
+
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+        }
+        .footer-note a { color: var(--accent); font-weight: 600; text-decoration: none; }
+        .footer-note a:hover { text-decoration: underline; }
+
+        /* Register form */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="brand">
+                <div class="brand-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+                <p class="brand-name">PromptCraft Studio</p>
+            </div>
+
+            <!-- STEP 1: Enter Email/Username -->
+            <div class="step active" id="step1">
+                <h1 class="step-title">Selamat Datang</h1>
+                <p class="step-subtitle">Masukkan email atau username Anda untuk melanjutkan.</p>
+
+                <div id="alert1" class="alert"></div>
+
+                <form id="form1">
+                    <div class="form-group">
+                        <label for="identity">Email atau Username</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="identity" placeholder="email@contoh.com atau username" required autocomplete="username" autofocus>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="btn1">
+                        <span id="btn1Text">Lanjutkan</span>
+                        <div class="spinner" id="spinner1"></div>
+                        <i class="fas fa-arrow-right" id="btn1Icon"></i>
+                    </button>
+                </form>
+
+                <div class="footer-note" style="margin-top:20px;">
+                    Belum punya akun? <a href="#" id="showRegister">Daftar Gratis</a>
+                </div>
+            </div>
+
+            <!-- STEP 2: Enter Password -->
+            <div class="step" id="step2">
+                <h1 class="step-title">Masukkan Password</h1>
+                <p class="step-subtitle">Selamat datang kembali! Verifikasi identitas Anda.</p>
+
+                <div id="userPill" class="identity-pill" title="Klik untuk ganti akun">
+                    <div class="identity-pill-avatar" id="pillAvatar">U</div>
+                    <span class="identity-pill-name" id="pillName">User</span>
+                    <span class="identity-pill-change"><i class="fas fa-exchange-alt"></i> Ganti</span>
+                </div>
+
+                <div id="alert2" class="alert"></div>
+
+                <form id="form2">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+                            <button type="button" class="toggle-pass" id="togglePass" title="Tampilkan/Sembunyikan">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="btn2">
+                        <span id="btn2Text">Masuk Sekarang</span>
+                        <div class="spinner" id="spinner2"></div>
+                    </button>
+                </form>
+
+                <div class="footer-note">
+                    <button class="btn-ghost" id="backToStep1"><i class="fas fa-arrow-left"></i> Kembali</button>
+                </div>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <div class="step" id="stepRegister">
+                <h1 class="step-title">Buat Akun Baru</h1>
+                <p class="step-subtitle">Isi data di bawah untuk memulai secara gratis.</p>
+
+                <div id="alertRegister" class="alert"></div>
+
+                <form id="formRegister">
+                    <div class="form-group">
+                        <label for="regName">Nama Lengkap</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-user-circle input-icon"></i>
+                            <input type="text" id="regName" placeholder="Nama Anda">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="regEmail" placeholder="email@contoh.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regUsername">Username</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-at input-icon"></i>
+                            <input type="text" id="regUsername" placeholder="Pilih username unik" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Password</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="regPassword" placeholder="Min. 6 karakter" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" id="btnRegister">
+                        <span id="btnRegisterText">Daftar Akun</span>
+                        <div class="spinner" id="spinnerRegister"></div>
+                    </button>
+                </form>
+
+                <div class="footer-note">
+                    Sudah punya akun? <a href="#" id="showLogin">Masuk Sini</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let identityValue = '';
+
+        // Elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const stepRegister = document.getElementById('stepRegister');
+
+        function showStep(step) {
+            [step1, step2, stepRegister].forEach(s => s.classList.remove('active'));
+            step.classList.add('active');
+        }
+
+        function showAlert(alertEl, type, msg) {
+            alertEl.className = `alert ${type} show`;
+            alertEl.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'clock'}"></i><span>${msg}</span>`;
+        }
+
+        function hideAlert(alertEl) { alertEl.className = 'alert'; }
+
+        function setLoading(btn, textEl, spinnerEl, iconEl, loading) {
+            btn.disabled = loading;
+            textEl.style.opacity = loading ? '0.5' : '1';
+            spinnerEl.style.display = loading ? 'block' : 'none';
+            if (iconEl) iconEl.style.display = loading ? 'none' : 'inline';
+        }
+
+        // Toggle password visibility
+        document.getElementById('togglePass').addEventListener('click', () => {
+            const pw = document.getElementById('password');
+            const icon = document.querySelector('#togglePass i');
+            if (pw.type === 'password') { pw.type = 'text'; icon.className = 'fas fa-eye-slash'; }
+            else { pw.type = 'password'; icon.className = 'fas fa-eye'; }
+        });
+
+        // STEP 1 Submit
+        document.getElementById('form1').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const identity = document.getElementById('identity').value.trim();
+            if (!identity) return;
+
+            const btn1 = document.getElementById('btn1');
+            const alert1 = document.getElementById('alert1');
+            hideAlert(alert1);
+            setLoading(btn1, document.getElementById('btn1Text'), document.getElementById('spinner1'), document.getElementById('btn1Icon'), true);
+
+            try {
+                const res = await fetch('/api/auth/check-identity', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identity })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.found) {
+                    // Found and active → go to step 2
+                    identityValue = identity;
+                    document.getElementById('pillName').textContent = data.display_name || data.username;
+                    document.getElementById('pillAvatar').textContent = (data.display_name || data.username).charAt(0).toUpperCase();
+                    showStep(step2);
+                    setTimeout(() => document.getElementById('password').focus(), 100);
+                } else if (res.status === 403 && data.pending) {
+                    showAlert(alert1, 'warning', data.message);
+                } else {
+                    // Not found
+                    showAlert(alert1, 'error', `${data.message || 'Akun tidak ditemukan.'} <a href="#" id="goRegisterFromAlert">Daftar sekarang →</a>`);
+                    setTimeout(() => {
+                        const link = document.getElementById('goRegisterFromAlert');
+                        if (link) link.addEventListener('click', (ev) => { ev.preventDefault(); showStep(stepRegister); document.getElementById('regEmail').value = identity; });
+                    }, 100);
+                }
+            } catch (err) {
+                showAlert(alert1, 'error', 'Koneksi ke server gagal. Pastikan server berjalan.');
+            } finally {
+                setLoading(btn1, document.getElementById('btn1Text'), document.getElementById('spinner1'), document.getElementById('btn1Icon'), false);
+            }
+        });
+
+        // STEP 2 Submit
+        document.getElementById('form2').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const btn2 = document.getElementById('btn2');
+            const alert2 = document.getElementById('alert2');
+            hideAlert(alert2);
+            setLoading(btn2, document.getElementById('btn2Text'), document.getElementById('spinner2'), null, true);
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: identityValue, password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    window.location.href = 'index.html';
+                } else {
+                    showAlert(alert2, 'error', data.error || 'Password salah. Coba lagi.');
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                }
+            } catch (err) {
+                showAlert(alert2, 'error', 'Koneksi ke server gagal.');
+            } finally {
+                setLoading(btn2, document.getElementById('btn2Text'), document.getElementById('spinner2'), null, false);
+            }
+        });
+
+        // Back to step 1
+        document.getElementById('backToStep1').addEventListener('click', () => {
+            document.getElementById('password').value = '';
+            hideAlert(document.getElementById('alert2'));
+            showStep(step1);
+            document.getElementById('identity').focus();
+        });
+
+        // Identity pill click = back
+        document.getElementById('userPill').addEventListener('click', () => {
+            document.getElementById('backToStep1').click();
+        });
+
+        // Show register
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            showStep(stepRegister);
+        });
+
+        // Show login from register
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            showStep(step1);
+        });
+
+        // REGISTER Submit
+        document.getElementById('formRegister').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const display_name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const alertR = document.getElementById('alertRegister');
+            const btnR = document.getElementById('btnRegister');
+            hideAlert(alertR);
+
+            if (password.length < 6) { showAlert(alertR, 'error', 'Password minimal 6 karakter.'); return; }
+
+            setLoading(btnR, document.getElementById('btnRegisterText'), document.getElementById('spinnerRegister'), null, true);
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, display_name: display_name || username })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert(alertR, 'success', 'Pendaftaran berhasil! Silakan masuk dengan akun baru Anda.');
+                    setTimeout(() => {
+                        document.getElementById('identity').value = email;
+                        showStep(step1);
+                    }, 1800);
+                } else {
+                    showAlert(alertR, 'error', data.error || 'Terjadi kesalahan.');
+                }
+            } catch (err) {
+                showAlert(alertR, 'error', 'Koneksi ke server gagal.');
+            } finally {
+                setLoading(btnR, document.getElementById('btnRegisterText'), document.getElementById('spinnerRegister'), null, false);
+            }
+        });
+    </script>
+</body>
+</html>
