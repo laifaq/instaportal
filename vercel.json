@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "promptcraft-studio",
   "builds": [
     {
       "src": "server.js",
@@ -14,7 +13,12 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/$1",
+      "continue": true
+    },
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
     }
   ]
 }
