@@ -1,0 +1,33 @@
+const { Pool } = require('pg');
+require('dotenv').config();
+
+const connectionString = process.env.DATABASE_URL;
+
+const pool = new Pool({
+  connectionString: connectionString,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+  prepare: (text) => {
+    return {
+      run: async (...params) => {
+        const pgQuery = text.replace(/\?/g, (_, __, str) => `$${(str.match(/\?/g) || []).length + 1}`);
+        return pool.query(pgQuery, params);
+      },
+      get: async (...params) => {
+        const pgQuery = text.replace(/\?/g, (_, __, str) => `$${(str.match(/\?/g) || []).length + 1}`);
+        const res = await pool.query(pgQuery, params);
+        return res.rows[0];
+      },
+      all: async (...params) => {
+        const pgQuery = text.replace(/\?/g, (_, __, str) => `$${(str.match(/\?/g) || []).length + 1}`);
+        const res = await pool.query(pgQuery, params);
+        return res.rows;
+      }
+    };
+  }
+};
